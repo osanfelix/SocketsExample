@@ -8,17 +8,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class MainSockets
 {
 	public static void main(String args[])
 	{
-		if(args[0].equals("s"))
-			ServerSideEx();
+		if(args[0].equals("eco"))
+		{
+			if(args[1].equals("s"))
+				ServerSideEco();
+			else
+				ClientSideEco();
+		}
+		
 		else
-			ClientSideEx(Integer.parseInt(args[0]));
+		{
+			if(args[1].equals("s"))
+				ServerSideEx();
+			else
+				ClientSideEx(Integer.parseInt(args[1]));
+		}
 	}
 	
 	static void ServerSideEx() 
@@ -33,7 +46,7 @@ public class MainSockets
 		{
 			ServerSocket server	= new ServerSocket(10023);
 			Socket connection	= server.accept();	// Allow one connection
-			//server.close();	// No more connections allowed
+			server.close();	// No more connections allowed
 			
 			// Incoming data data
 			incomingStream	= connection.getInputStream();
@@ -110,19 +123,63 @@ public class MainSockets
 	}
 	
 	
-	static void PrintServerSocketData()
+	static void ServerSideEco() 
 	{
+		InputStream incomingStream	= null;
+
 		try
 		{
-			ServerSocket server = new ServerSocket(10023);
-			System.out.println("Server listening on " + server.getLocalPort());
-			Socket connection = server.accept();	// Allow one connection
+			ServerSocket server	= new ServerSocket(10023);
+			Socket connection	= server.accept();	// Allow one connection
+			System.out.println("[ Client connected ]");
 			server.close();	// No more connections allowed
-			print(connection.getInputStream());
 			
-		}catch(IOException e){System.out.println("Error en la conexión");}
+			// Incoming data data
+			incomingStream	= connection.getInputStream();
+			
+			print(incomingStream);
+			incomingStream.close();
+			connection.close();
+		}
+		catch(IOException e)
+		{
+			System.out.println("Error en el servidor");
+			e.printStackTrace(System.out);
+		}
 	}
 	
+	static void ClientSideEco()
+	{
+		OutputStream outgoingStream	= null;
+		PrintWriter outData = null;
+		
+		try
+		{
+			Socket connection = new Socket("localhost", 10023);
+			// Outgoing data
+			outgoingStream = connection.getOutputStream();
+			
+			
+			Scanner input = new Scanner(System.in);
+			
+			outData = new PrintWriter(outgoingStream, true);
+			
+			while(true)
+			{
+				String keyboardInput = input.nextLine();
+				if(keyboardInput.equals("exit"))
+					break;
+				outData.println(keyboardInput);
+			}
+			
+			outData.close();
+			connection.close();
+		}
+		catch (IOException e) {
+			System.out.println("Error en el servidor");
+			e.printStackTrace(System.out);
+		}
+	}
 	
 	static void print(InputStream is) throws IOException {
 		if (is != null) {

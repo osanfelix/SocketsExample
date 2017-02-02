@@ -1,2 +1,2 @@
-java -jar ./dist/SocketsExample.jar s
+@java -jar ./dist/SocketsExample.jar e s
 @pause
