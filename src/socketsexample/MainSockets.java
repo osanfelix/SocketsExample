@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
@@ -17,6 +18,7 @@ public class MainSockets
 {
 	public static void main(String args[])
 	{
+		//URLExample.showExamples();
 		if(args[0].equals("eco"))
 		{
 			if(args[1].equals("s"))
@@ -24,7 +26,13 @@ public class MainSockets
 			else
 				ClientSideEco();
 		}
-		
+		if(args[0].equals("inet"))
+		{
+			if(args[1].equals("s"))
+				ServerTestInetAddress();
+			else
+				ClientTestinetAddress();
+		}
 		else
 		{
 			if(args[1].equals("s"))
@@ -33,6 +41,7 @@ public class MainSockets
 				ClientSideEx(Integer.parseInt(args[1]));
 		}
 	}
+	
 	
 	static void ServerSideEx() 
 	{
@@ -117,7 +126,7 @@ public class MainSockets
 			
 		}
 		catch (IOException e) {
-			System.out.println("Error en el servidor");
+			System.out.println("Error en el cliente");
 			e.printStackTrace(System.out);
 		}
 	}
@@ -180,6 +189,68 @@ public class MainSockets
 			e.printStackTrace(System.out);
 		}
 	}
+	
+	
+	static void ServerTestInetAddress()
+	{
+		try
+		{
+			// First create the serverSockey
+			ServerSocket server = new ServerSocket(10023);
+			Socket connection = server.accept();
+			
+			InetAddress address = connection.getInetAddress();
+			
+			// Print client connection data
+			System.out.println("Client Ip: " + address.getHostAddress());
+			System.out.println("Client Name: " + address.getHostName());
+			System.out.println("Client String: " + address.toString());
+			System.out.println("Client Canonical name: " + address.getCanonicalHostName());
+			
+			address = connection.getLocalAddress();
+			
+			// Print server address
+			System.out.println("Server Ip: " + address.getHostAddress());
+			System.out.println("Server Name: " + address.getHostName());
+			System.out.println("Server String: " + address.toString());
+			System.out.println("Server Canonical name: " + address.getCanonicalHostName());
+		}
+		catch(IOException e)
+		{
+			System.out.println("Error en el servidor");
+			e.printStackTrace(System.out);
+		}
+		
+	}
+	
+	static void ClientTestinetAddress()
+	{
+		try
+		{
+			Socket connection = new Socket("localhost", 10023);
+			
+			InetAddress address = connection.getInetAddress();
+			
+			// Print server address
+			System.out.println("Server Ip: " + address.getHostAddress());
+			System.out.println("Server Name: " + address.getHostName());
+			System.out.println("Server String: " + address.toString());
+			System.out.println("Server Canonical name: " + address.getCanonicalHostName());
+			
+			address = connection.getLocalAddress();
+			
+			// Print client connection data
+			System.out.println("Client Ip: " + address.getHostAddress());
+			System.out.println("Client Name: " + address.getHostName());
+			System.out.println("Client String: " + address.toString());
+			System.out.println("Client Canonical name: " + address.getCanonicalHostName());
+		}
+		catch (IOException e) {
+			System.out.println("Error en el cliente");
+			e.printStackTrace(System.out);
+		}
+	}
+	
 	
 	static void print(InputStream is) throws IOException {
 		if (is != null) {
