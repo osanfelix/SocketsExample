@@ -26,7 +26,7 @@ public class MainSockets
 			else
 				ClientSideEco();
 		}
-		if(args[0].equals("inet"))
+		else if(args[0].equals("inet"))
 		{
 			if(args[1].equals("s"))
 				ServerTestInetAddress();
@@ -147,7 +147,10 @@ public class MainSockets
 			incomingStream	= connection.getInputStream();
 			
 			print(incomingStream);
-			incomingStream.close();
+			
+			if(connection.isInputShutdown())
+				connection.shutdownInput();
+//			incomingStream.close();
 			connection.close();
 		}
 		catch(IOException e)
@@ -180,8 +183,9 @@ public class MainSockets
 					break;
 				outData.println(keyboardInput);
 			}
-			
-			outData.close();
+			if(connection.isOutputShutdown())
+				connection.shutdownOutput();
+//			outData.close();
 			connection.close();
 		}
 		catch (IOException e) {
